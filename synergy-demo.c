@@ -45,44 +45,44 @@ void _tick_print(char* szPrompt, int nTime)
 }
 BOOL _capture_finger(int nMilliSecondTimeout)
 {
-    int nRet;
+	int nRet;
 	struct timeval tv3,tv4;
 
-    gettimeofday(&tv3, NULL);
-    while(1)
-    {
+	gettimeofday(&tv3, NULL);
+	while(1)
+	{
 		_tick_stat();
-        nRet = SB_FP_CAPTUREFINGER();
+		nRet = SB_FP_CAPTUREFINGER();
 		if(nRet == 0)
 		{
 			return TRUE;
 		}
 
-        gettimeofday(&tv4, NULL);
+		gettimeofday(&tv4, NULL);
 
 		if((tv4.tv_sec-tv3.tv_sec)*1000+(tv4.tv_usec-tv3.tv_usec)/1000 > nMilliSecondTimeout)
 		{
 			//app_printf("Timeout\n");
 			break;
 		}
-    }
+	}
 
-    return FALSE;
+	return FALSE;
 }
 
 
 int _memory_setup(){
 	size_t free =getpagesize();
-	        //Obtain handle to physical memory
+	//Obtain handle to physical memory
 	if ((fd = open ("/dev/mem", O_RDWR | O_SYNC) ) < 0) {
-	    printf("Unable to open /dev/mem: %s\n", strerror(errno));
-	            return -1;
+		printf("Unable to open /dev/mem: %s\n", strerror(errno));
+		return -1;
 	}
 	//map a page of memory to gpio at offset 0x56000000
 	gpio = (uint32_t *)mmap(0, getpagesize(), PROT_READ | PROT_WRITE, MAP_SHARED, fd, target );
 	if((int32_t)gpio < 0) {
-	    printf("Mmap failed: %s\n", strerror(errno));
-	        	return -1;
+		printf("Mmap failed: %s\n", strerror(errno));
+		return -1;
 	}
 	//gpio = gpio + 0X1C;//Offset of GPH Register base is $target adding 1 to base pointer adds 4 to address in 32 bit memory offset of GPH is 70 0x70/0x4 = 0x1C
 	return 0;
@@ -181,7 +181,7 @@ JNIEXPORT void JNICALL Java_com_synel_synergy_synergy2416_presentation_controlle
 }
 
 JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_FP_1OPENDEVICE
-  (JNIEnv *env, jclass jcls, jstring JtemplateLoc){
+(JNIEnv *env, jclass jcls, jstring JtemplateLoc){
 	hlp_printf("%s: called \n",__func__);
 	int nSensorType = CMOSTYPE_OV7648;
 	char *nativeString = "3k";
@@ -192,55 +192,55 @@ JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controlle
 	hlp_printf("%s: templateLocation is %s, nSensorType (3k,%d) \n",__func__,templateLocation,nSensorType);
 	nRet=hlpOpen(nativeString, nSensorType);
 	if(nRet < 0)
-		{
-		    hlp_printf("%s: nRet %d, try next nSensorType (10k,%d) \n",__func__,nRet,nSensorType);
-			nativeString = "10k";
-			nSensorType = CMOSTYPE_HV7131R;
-			nRet=hlpOpen(nativeString, nSensorType);
-			if(nRet >= 0){
+	{
+		hlp_printf("%s: nRet %d, try next nSensorType (10k,%d) \n",__func__,nRet,nSensorType);
+		nativeString = "10k";
+		nSensorType = CMOSTYPE_HV7131R;
+		nRet=hlpOpen(nativeString, nSensorType);
+		if(nRet >= 0){
 			hlpLoadFingersDB(templateLocation);
 			return nRet;
-			}
-			hlp_printf("%s: nRet %d, try next nSensorType (10k,%d) \n",__func__,nRet,nSensorType);
-			nativeString = "10k";
-			nSensorType = CMOSTYPE_EB6048;
-			nRet=hlpOpen(nativeString, nSensorType);
-			if(nRet >= 0){
-			hlpLoadFingersDB(templateLocation);
-			return nRet;
-			}
-			hlp_printf("%s: nRet %d, try next nSensorType (3k,%d) \n",__func__,nRet,nSensorType);
-			nativeString = "3k";
-			nSensorType = CMOSTYPE_HV7131R;
-			nRet=hlpOpen(nativeString, nSensorType);
-			if(nRet >= 0){
-			hlpLoadFingersDB(templateLocation);
-			return nRet;
-			}
-			hlp_printf("%s: nRet %d, try next nSensorType (3k,%d) \n",__func__,nRet,nSensorType);
-			nativeString = "3k";
-			nSensorType = CMOSTYPE_EB6048;
-			nRet=hlpOpen(nativeString, nSensorType);
-			if(nRet >= 0){
-			hlpLoadFingersDB(templateLocation);
-			return nRet;
-			}
-			return -1;
 		}
+		hlp_printf("%s: nRet %d, try next nSensorType (10k,%d) \n",__func__,nRet,nSensorType);
+		nativeString = "10k";
+		nSensorType = CMOSTYPE_EB6048;
+		nRet=hlpOpen(nativeString, nSensorType);
+		if(nRet >= 0){
+			hlpLoadFingersDB(templateLocation);
+			return nRet;
+		}
+		hlp_printf("%s: nRet %d, try next nSensorType (3k,%d) \n",__func__,nRet,nSensorType);
+		nativeString = "3k";
+		nSensorType = CMOSTYPE_HV7131R;
+		nRet=hlpOpen(nativeString, nSensorType);
+		if(nRet >= 0){
+			hlpLoadFingersDB(templateLocation);
+			return nRet;
+		}
+		hlp_printf("%s: nRet %d, try next nSensorType (3k,%d) \n",__func__,nRet,nSensorType);
+		nativeString = "3k";
+		nSensorType = CMOSTYPE_EB6048;
+		nRet=hlpOpen(nativeString, nSensorType);
+		if(nRet >= 0){
+			hlpLoadFingersDB(templateLocation);
+			return nRet;
+		}
+		return -1;
+	}
 	hlpLoadFingersDB(templateLocation);
 	//(*env)->ReleaseStringUTFChars(env, sensorLib, nativeString);
 	return nRet;
 }
 
 JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_FP_1CLOSEDEVICE
-  (JNIEnv *env, jclass jcls){
+(JNIEnv *env, jclass jcls){
 	hlp_printf("%s: called \n",__func__);
 	return (int)hlpClose();
 }
 
 
 JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_FP_1ENROLE_1EMPLOYEE
-	(JNIEnv *env, jclass jcls,jstring badge, jint fingernum, jlong timeOut, jlong gapTime, jobject  enrollmentHandler ){
+(JNIEnv *env, jclass jcls,jstring badge, jint fingernum, jlong timeOut, jlong gapTime, jobject  enrollmentHandler ){
 	static char fileName[35];
 	int nRet = 0;
 	const char *nativeBadge =(*env)->GetStringUTFChars(env, badge, 0);
@@ -251,7 +251,7 @@ JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controlle
 	jboolean readerError = JNI_FALSE ;
 	sprintf(fileName,"%s%d_%d",templateLocation,badgeL, fingerN );
 	strcat(fileName,".template");
-    hlp_printf("%s: template filename is %s\n",__func__,fileName);
+	hlp_printf("%s: template filename is %s\n",__func__,fileName);
 
 	jclass enrollObj = (*env)->GetObjectClass(env,enrollmentHandler);
 	jmethodID methodoFPR = (*env)->GetMethodID(env,enrollObj, "onFingerPrintRead", "(I)V");
@@ -264,157 +264,157 @@ JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controlle
 	hlp_printf("ID is %d, finger num is %d step %d \n",(int)badgeL,fingernum,step);
 	if(step ==1){
 		if (hlpGetEnrollCount() == gRegMax)
-		 	 {
-		 	 readerError = JNI_TRUE;
-		 	 return -108;
-		 	 }
+		{
+			readerError = JNI_TRUE;
+			return -108;
+		}
 
 		hlpSearchID((long*)&ID);
 		ID =(DWORD) badgeL ;
 		if ((nRet = hlpEnrollPrepare(badgeL, fingernum, 0)) < 0)
-		 	{
-		 	readerError = JNI_TRUE;
-		 	return -109;
-		 	}
+		{
+			readerError = JNI_TRUE;
+			return -109;
+		}
 
 		if((nRet = SB_FP_ENROLLSTART()) < 0)
-		 	{
-		 	readerError = JNI_TRUE;
-		 	return -103;
-		 	}
+		{
+			readerError = JNI_TRUE;
+			return -103;
+		}
 
 		if (!_capture_finger(timeOut))
-		 	{
-		 	readerError = JNI_TRUE;
-		 	return -107;
-		 	}
+		{
+			readerError = JNI_TRUE;
+			return -107;
+		}
 
 		nRet = SB_FP_ENROLLNTH256(step);
 
-		 if (nRet < 0)
-		 	{
-		 	readerError = JNI_TRUE;
-		 	return -103;
-		 	}
-		 else if(nRet > 0)
-		 	{
-		 	readerError = JNI_TRUE;
-		 	return -106;
-		 	}
-		 else
-		 	{
+		if (nRet < 0)
+		{
+			readerError = JNI_TRUE;
+			return -103;
+		}
+		else if(nRet > 0)
+		{
+			readerError = JNI_TRUE;
+			return -106;
+		}
+		else
+		{
 			(*env)->CallVoidMethod(env,enrollmentHandler, methodoFPR ,step);
-		 	}
-		 }
+		}
+	}
 	step++;
 	usleep(gapTime*1000);
 	(*env)->CallVoidMethod(env,enrollmentHandler, methodoRFF,step,readerError);
 
-	 while(SB_FP_ISPRESSFINGER() == 0);
+	while(SB_FP_ISPRESSFINGER() == 0);
 
-	 if (!_capture_finger(timeOut))
-		{
-		 readerError = JNI_TRUE;
-		 return -107;
-		}
+	if (!_capture_finger(timeOut))
+	{
+		readerError = JNI_TRUE;
+		return -107;
+	}
 
 	nRet = SB_FP_ENROLLNTH256(step);
 
 	if (nRet < 0)
-		{
-			readerError = JNI_TRUE;
-			return -103;
-		}
+	{
+		readerError = JNI_TRUE;
+		return -103;
+	}
 	else if(nRet > 0)
-		{
-			readerError = JNI_TRUE;
-			return -106;
-		}
+	{
+		readerError = JNI_TRUE;
+		return -106;
+	}
 
 	if(step<3)
-		{
+	{
 		(*env)->CallVoidMethod(env,enrollmentHandler, methodoFPR ,step);
 		step++;
 		usleep(gapTime*1000);
 		(*env)->CallVoidMethod(env,enrollmentHandler, methodoRFF,step,readerError);
-		}
+	}
 
-	 while(SB_FP_ISPRESSFINGER() == 0);
+	while(SB_FP_ISPRESSFINGER() == 0);
 
-	 if (!_capture_finger(timeOut))
-		{
-		 readerError = JNI_TRUE;
-		 return -107;
-		}
+	if (!_capture_finger(timeOut))
+	{
+		readerError = JNI_TRUE;
+		return -107;
+	}
 
 	nRet = SB_FP_ENROLLNTH256(step);
 
 	if (nRet < 0)
-		{
-			readerError = JNI_TRUE;
-			return -103;
-		}
+	{
+		readerError = JNI_TRUE;
+		return -103;
+	}
 	else if(nRet > 0)
-		{
-			readerError = JNI_TRUE;
-			return -106;
-		}
+	{
+		readerError = JNI_TRUE;
+		return -106;
+	}
 	else{
-			hlpDelete(badgeL,fingernum);
-		}
+		hlpDelete(badgeL,fingernum);
+	}
 
 
 	if((nRet = hlpEnrollEnd(badgeL, fingernum, 0)) < 0)
-		{
-			readerError = JNI_TRUE;
-			return -103;
-		}
+	{
+		readerError = JNI_TRUE;
+		return -103;
+	}
 
 	if(hlpSaveTemplateToFile(fileName, &gFeature))
-		{
-			return 0;
-		}
+	{
+		return 0;
+	}
 	else
-		{
-			readerError = JNI_TRUE;
-			return -110;
-		}
+	{
+		readerError = JNI_TRUE;
+		return -110;
+	}
 
 }
 
 JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_FP_1VALIDATE_1EMPLOYEE
 (JNIEnv *env, jclass jcls,jstring badge, jint fingernum, jlong timeOut ){
-	 hlp_printf("%s: called \n",__func__);
-	 const char *nativeBadge =(*env)->GetStringUTFChars(env, badge, 0);
-	 long badgeL = atol(nativeBadge);
-	 int nRet;
-	 DWORD ID, dwTotalTime = 0;
-	 int i=0;
-	 long fingerNumber = (long)fingernum;
+	hlp_printf("%s: called \n",__func__);
+	const char *nativeBadge =(*env)->GetStringUTFChars(env, badge, 0);
+	long badgeL = atol(nativeBadge);
+	int nRet;
+	DWORD ID, dwTotalTime = 0;
+	int i=0;
+	long fingerNumber = (long)fingernum;
 
-	 if (hlpGetEnrollCount() == 0)
-		{
-			return -101;
-		}
+	if (hlpGetEnrollCount() == 0)
+	{
+		return -101;
+	}
 
-	 ID = (DWORD)badge;
+	ID = (DWORD)badge;
 
-	 if ((nRet = hlpCheckFingerNum(badgeL, fingerNumber)) < 0)
-		{
-		 	 return -102;
-		}
+	if ((nRet = hlpCheckFingerNum(badgeL, fingerNumber)) < 0)
+	{
+		return -102;
+	}
 
-	 while(SB_FP_ISPRESSFINGER() == 0);
+	while(SB_FP_ISPRESSFINGER() == 0);
 
-	 if (!_capture_finger(timeOut)){
-				return -103;
-		}
-	  nRet = hlpVerify((long)badgeL, fingerNumber);
-	  dwTotalTime += (DWORD)_tick_end();
-	  if (nRet < 0)
-		  return -104;
+	if (!_capture_finger(timeOut)){
+		return -103;
+	}
+	nRet = hlpVerify((long)badgeL, fingerNumber);
+	dwTotalTime += (DWORD)_tick_end();
+	if (nRet < 0)
+		return -104;
 
-	  return nRet;
+	return nRet;
 
 }
 
@@ -428,9 +428,9 @@ JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controlle
 	DWORD ID, confirm;
 	hlp_printf("%s: called \n",__func__);
 	if (hlpGetEnrollCount() == 0)
-		{
-			return -101;//NO Templates Loaded
-		}
+	{
+		return -101;//NO Templates Loaded
+	}
 	hlpSearchID((long*)&ID);
 	if( fingernum < 0){
 		if((nRet = hlpDeleteID(badgeL))< 0){
@@ -481,7 +481,7 @@ JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controlle
 	int nRet = 0;
 	hlp_printf("%s: badgeL is %d and fingerNumber is %d \n",__func__,badgeL,fingerNumber);
 	if ((nRet = (int)hlpCheckFingerNum(badgeL, fingerNumber)) < 0){
-			 	 return -102;
+		return -102;
 	}
 	return 0;
 }
@@ -538,25 +538,25 @@ JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controlle
 
 JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_FP_1IDENTIFY_1EMPLOYEE(JNIEnv *env,jclass jcls){
 	int nRet;
-		DWORD ID, FingerNum, dwTotalTime = 0,cap_time=0;
-		int i;
+	DWORD ID, FingerNum, dwTotalTime = 0,cap_time=0;
+	int i;
 
-		if (hlpGetEnrollCount() == 0)
-		{
-			return -101;
-		}
-		nRet = SB_FP_CAPTUREFINGER();
+	if (hlpGetEnrollCount() == 0)
+	{
+		return -101;
+	}
+	nRet = SB_FP_CAPTUREFINGER();
 
-		if(nRet == 0)
-		{
-			nRet = hlpIdentify((long*)&ID, (long*)&FingerNum);
-			return (long) nRet;
-		}
+	if(nRet == 0)
+	{
+		nRet = hlpIdentify((long*)&ID, (long*)&FingerNum);
+		return (long) nRet;
+	}
 
-		if (nRet < 0)
-			return -107;
-		else
-			return nRet;
+	if (nRet < 0)
+		return -107;
+	else
+		return nRet;
 }
 
 
