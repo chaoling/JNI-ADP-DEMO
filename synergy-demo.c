@@ -10,8 +10,8 @@
 #include "_fphlp.h"
 #include <dirent.h>
 #include <jni.h>
-#include "ADP_DemoFPU.h"
-#include "ADP_DemoFPU_Light.h"
+#include "ADP_FPU.h"
+#include "ADP_FPU_Light.h"
 
 #define APP_REPEAT		20
 #define APP_DEF_FP_NUM	0
@@ -128,7 +128,7 @@ char* _ultostr(unsigned long num, char *str, int base)
 
 ///////////////////// JNI API segment /////////////////////////////////////
 
-JNIEXPORT void JNICALL Java_ADP_DemoFPU_REDON(JNIEnv * env, jclass class){
+JNIEXPORT void JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_REDON(JNIEnv * env, jclass class){
 	if(_memory_setup() < 0){
 		printf("Memory Setup Failed Critical Error\n");
 	}
@@ -141,7 +141,7 @@ JNIEXPORT void JNICALL Java_ADP_DemoFPU_REDON(JNIEnv * env, jclass class){
 	}
 }
 
-JNIEXPORT void JNICALL Java_ADP_DemoFPU_REDOFF(JNIEnv * env, jclass class){
+JNIEXPORT void JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_REDOFF(JNIEnv * env, jclass class){
 	if(_memory_setup() < 0){
 		printf("Memory Setup Failed Critical Error\n");
 	}
@@ -154,7 +154,7 @@ JNIEXPORT void JNICALL Java_ADP_DemoFPU_REDOFF(JNIEnv * env, jclass class){
 	}
 }
 
-JNIEXPORT void JNICALL Java_ADP_DemoFPU_GREENON(JNIEnv * env, jclass class){
+JNIEXPORT void JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_GREENON(JNIEnv * env, jclass class){
 	if(_memory_setup() < 0){
 		printf("Memory Setup Failed Critical Error\n");
 	}
@@ -167,7 +167,7 @@ JNIEXPORT void JNICALL Java_ADP_DemoFPU_GREENON(JNIEnv * env, jclass class){
 	}
 }
 
-JNIEXPORT void JNICALL Java_ADP_DemoFPU_GREENOFF(JNIEnv * env, jclass class){
+JNIEXPORT void JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_GREENOFF(JNIEnv * env, jclass class){
 	if(_memory_setup() < 0){
 		printf("Memory Setup Failed Critical Error\n");
 	}
@@ -180,7 +180,7 @@ JNIEXPORT void JNICALL Java_ADP_DemoFPU_GREENOFF(JNIEnv * env, jclass class){
 	}
 }
 
-JNIEXPORT jint JNICALL Java_ADP_DemoFPU_FP_1OPENDEVICE
+JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_FP_1OPENDEVICE
   (JNIEnv *env, jclass jcls, jstring JtemplateLoc){
 	hlp_printf("%s: called \n",__func__);
 	int nSensorType = CMOSTYPE_OV7648;
@@ -232,14 +232,14 @@ JNIEXPORT jint JNICALL Java_ADP_DemoFPU_FP_1OPENDEVICE
 	return nRet;
 }
 
-JNIEXPORT jint JNICALL Java_ADP_DemoFPU_FP_1CLOSEDEVICE
+JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_FP_1CLOSEDEVICE
   (JNIEnv *env, jclass jcls){
 	hlp_printf("%s: called \n",__func__);
 	return (int)hlpClose();
 }
 
 
-JNIEXPORT jint JNICALL Java_ADP_DemoFPU_FP_1ENROLE_1EMPLOYEE
+JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_FP_1ENROLE_1EMPLOYEE
 	(JNIEnv *env, jclass jcls,jstring badge, jint fingernum, jlong timeOut, jlong gapTime, jobject  enrollmentHandler ){
 	static char fileName[35];
 	int nRet = 0;
@@ -382,7 +382,7 @@ JNIEXPORT jint JNICALL Java_ADP_DemoFPU_FP_1ENROLE_1EMPLOYEE
 
 }
 
-JNIEXPORT jint JNICALL Java_ADP_DemoFPU_FP_1VALIDATE_1EMPLOYEE
+JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_FP_1VALIDATE_1EMPLOYEE
 (JNIEnv *env, jclass jcls,jstring badge, jint fingernum, jlong timeOut ){
 	 hlp_printf("%s: called \n",__func__);
 	 const char *nativeBadge =(*env)->GetStringUTFChars(env, badge, 0);
@@ -404,24 +404,22 @@ JNIEXPORT jint JNICALL Java_ADP_DemoFPU_FP_1VALIDATE_1EMPLOYEE
 		 	 return -102;
 		}
 
-	 for (i=0; i<APP_REPEAT; i++)
-		{
-		 if (!_capture_finger(timeOut))
-			{
+	 while(SB_FP_ISPRESSFINGER() == 0);
+
+	 if (!_capture_finger(timeOut)){
 				return -103;
-			}
-			nRet = hlpVerify((long)badgeL, fingerNumber);
-			dwTotalTime += (DWORD)_tick_end();
-			if (nRet < 0)
-				return -104;
-			else
-				return 0;
 		}
-		return 0;
+	  nRet = hlpVerify((long)badgeL, fingerNumber);
+	  dwTotalTime += (DWORD)_tick_end();
+	  if (nRet < 0)
+		  return -104;
+
+	  return nRet;
+
 }
 
 
-JNIEXPORT jint JNICALL Java_ADP_DemoFPU_FP_1DELETE_1TEMPLATE(JNIEnv *env, jclass jcls,jstring badge, jint fingerNum ){
+JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_FP_1DELETE_1TEMPLATE(JNIEnv *env, jclass jcls,jstring badge, jint fingerNum ){
 	const char *nativeBadge =(*env)->GetStringUTFChars(env, badge, 0);
 	static char fileName[35];
 	long badgeL = atol(nativeBadge);
@@ -456,7 +454,7 @@ JNIEXPORT jint JNICALL Java_ADP_DemoFPU_FP_1DELETE_1TEMPLATE(JNIEnv *env, jclass
 
 }
 
-JNIEXPORT jobjectArray JNICALL Java_ADP_DemoFPU_FP_1GET_1BADGES(JNIEnv *env, jclass jcls){
+JNIEXPORT jobjectArray JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_FP_1GET_1BADGES(JNIEnv *env, jclass jcls){
 	int i=0;
 	long idsLength = hlpGetEnrollCount();
 	DWORD* ids = NULL;
@@ -476,7 +474,7 @@ JNIEXPORT jobjectArray JNICALL Java_ADP_DemoFPU_FP_1GET_1BADGES(JNIEnv *env, jcl
 	free(badgeString);
 	return badges;
 }
-JNIEXPORT jint JNICALL Java_ADP_DemoFPU_FP_1GET_1BADGE_1STATUS(JNIEnv *env, jclass jcls,jstring badge, jint fingernum ){
+JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_FP_1GET_1BADGE_1STATUS(JNIEnv *env, jclass jcls,jstring badge, jint fingernum ){
 	const char *nativeBadge =(*env)->GetStringUTFChars(env, badge, 0);
 	long badgeL = atol(nativeBadge);
 	long fingerNumber = (long)fingernum;
@@ -488,16 +486,20 @@ JNIEXPORT jint JNICALL Java_ADP_DemoFPU_FP_1GET_1BADGE_1STATUS(JNIEnv *env, jcla
 	return 0;
 }
 
-JNIEXPORT jint JNICALL Java_ADP_DemoFPU_FP_1SET_1TEMPLATE(JNIEnv *env, jclass jcls,jstring badge, jint fingernum, jstring template ){
-	static char fileName[50];
+JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_FP_1SET_1TEMPLATE(JNIEnv *env, jclass jcls,jstring badge, jint fingernum, jstring template ){
+	static char fileName[150];
 	const char *nativeBadge =(*env)->GetStringUTFChars(env, badge, 0);
 	const char *nativeTemplate = (*env)->GetStringUTFChars(env, template, 0);
 	long badgeL = atol(nativeBadge);
 	long fingerNum = (long)fingernum;
 	unsigned char * templateDecoded = malloc(sizeof(unsigned char)*1404);
 
+	printf("=============  JNI DEBUG Start ....====================");
 	sprintf(fileName,"%s%d_%d",templateLocation,badgeL, fingerNum );
 	strcat(fileName,".template");
+
+	printf("filename is: %s",fileName);
+	printf("=============  JNI DEBUG End ...====================");
 
 	templateDecoded=(unsigned char *)base64_decode(nativeTemplate,1404);
 	if(hlpSaveTemplateToFile(fileName, templateDecoded)){
@@ -517,7 +519,7 @@ JNIEXPORT jint JNICALL Java_ADP_DemoFPU_FP_1SET_1TEMPLATE(JNIEnv *env, jclass jc
 
 }
 
-JNIEXPORT jstring JNICALL Java_ADP_DemoFPU_FP_1GET_1TEMPLATE(JNIEnv *env, jclass jcls,jstring badge, jint fingernum ){
+JNIEXPORT jstring JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_FP_1GET_1TEMPLATE(JNIEnv *env, jclass jcls,jstring badge, jint fingernum ){
 	const char *nativeBadge =(*env)->GetStringUTFChars(env, badge, 0);
 	long badgeL = atol(nativeBadge);
 	long fingerNum = (long)fingernum;
@@ -530,11 +532,11 @@ JNIEXPORT jstring JNICALL Java_ADP_DemoFPU_FP_1GET_1TEMPLATE(JNIEnv *env, jclass
 	}
 	return (*env)->NewStringUTF(env, NULL);
 }
-JNIEXPORT jint JNICALL Java_ADP_DemoFPU_FP_1GET_1ENROLECOUNT(JNIEnv *env, jclass jcls){
+JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_FP_1GET_1ENROLECOUNT(JNIEnv *env, jclass jcls){
 	return (int)hlpGetEnrollCount();
 }
 
-JNIEXPORT jint JNICALL Java_ADP_DemoFPU_FP_1IDENTIFY_1EMPLOYEE(JNIEnv *env,jclass jcls){
+JNIEXPORT jint JNICALL Java_com_synel_synergy_synergy2416_presentation_controller_FPU_FP_1IDENTIFY_1EMPLOYEE(JNIEnv *env,jclass jcls){
 	int nRet;
 		DWORD ID, FingerNum, dwTotalTime = 0,cap_time=0;
 		int i;

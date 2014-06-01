@@ -327,7 +327,7 @@ long hlpOpen(char* szLibSuffix, int nSensorType)
 	gSensorType = nSensorType;
 
 	// load fp.so
-	sprintf(szLibName, "fp_%s.so", szLibSuffix);
+	sprintf(szLibName, "/usr/lib/fpu/fp_%s.so", szLibSuffix);
 	hlp_printf("loading lib %s \n",szLibName);
 	vhfp = dlopen( szLibName, RTLD_NOW );
 	if( vhfp == NULL ){
@@ -565,6 +565,7 @@ long hlpEnrollEnd(long nID, long nFingerNum, long Manager)
 //////////////////////////////////////////////////////////////////////////
 long hlpIdentify(long* pnID, long* pnFingerNum) 
 {
+
 	int nRet;
 	BOOL bAdapted;
 
@@ -578,9 +579,9 @@ long hlpIdentify(long* pnID, long* pnFingerNum)
 	*pnID = gMatchData[nRet].ID;
 	*pnFingerNum = gMatchData[nRet].FingerNum;
 
-	if(bAdapted) _save_template(nRet);
+	//if(bAdapted) _save_template(nRet);
 
-	return 0;
+	return gMatchData[nRet].ID;
 }
 
 long hlpVerify(long nID, long nFingerNum) 
